@@ -16,6 +16,9 @@ public sealed class LawFirmDbContext : DbContext
 
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<ClientContact> ClientContacts => Set<ClientContact>();
+    
+    //加上reference
+    public DbSet<ReferenceData> ReferenceDatas => Set<ReferenceData>();
 
     private static readonly DateTimeOffset SeedDate = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
@@ -120,6 +123,12 @@ public sealed class LawFirmDbContext : DbContext
                 Email = "jane@acme.example", Phone = "+61 400 000 001", Company = "Acme Holdings",
                 IsActive = true, CreatedAt = SeedDate, CreatedBy = "system"
             });
+        });
+
+        // 2. 新增 ReferenceDataItem 的 Fluent API 配置与种子数据 
+        modelBuilder.Entity<ReferenceData>(entity =>
+        {
+            modelBuilder.Entity<ReferenceData>().HasKey(r => r.Id);
         });
 
         base.OnModelCreating(modelBuilder);
