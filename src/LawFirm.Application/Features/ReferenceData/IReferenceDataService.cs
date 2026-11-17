@@ -8,9 +8,10 @@ namespace LawFirm.Application.Features.ReferenceData;
 public interface IReferenceDataService
 {
     //增：创建新字典项
-    Task CreateAsync(CreateReferenceDataCommand request);
+    Task<Result<ReferenceDataDto>>CreateAsync(CreateReferenceDataCommand request);
+    
     //禁/启：停用或恢复（替代“删”）
-    Task<Result>DeactiveAsync(int id);
+    Task<Result> DeactiveAsync(int id);
     Task<Result> ActivateAsync(int id);
     //改：更新字典项
     Task<Result<ReferenceDataDto>> UpdateAsync(int id, UpdateReferenceDataCommand request);

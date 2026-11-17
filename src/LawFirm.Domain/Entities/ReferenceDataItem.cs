@@ -27,4 +27,7 @@ public class ReferenceDataItem
         };
         return referenceData;
     }
+
+    public void Deactivate() => IsActive = false;
+    public void Activate() => IsActive = true;
 }

@@ -58,11 +58,11 @@ public class ReferenceDataService : IReferenceDataService
     }
 
     //辅助方法to validate create在企业级开发中，最和谐的写法是把它们拆开保持 static：只负责基础的、不需要查数据库的格式校验（比如 Name 是否为空、Enum 是否合法）。
-    private static Error? ValidateCreate(CreateReferenceDataCommand r)
+    private static Error? ValidateCreate(CreateReferenceDataCommand request)
     {
         // - Name is required
         //Error.Validation（参数验证错误 ➔ 对应 HTTP 400）
-        if (string.IsNullOrEmpty(r.Name))
+        if (string.IsNullOrEmpty(request.Name))
             return Error.Validation("Name is required");
         
 
@@ -71,11 +71,110 @@ public class ReferenceDataService : IReferenceDataService
         //但是我们之前已经 如果没提供（null），就默认给 0了
 
         //检查type
-        if(!Enum.IsDefined(r.Type))
+        if(!Enum.IsDefined(request.Type))
             return Error.Validation("Reference Data Type is required ");
           
         return null;
     }
+
+
+
+
+
+//禁/启：停用或恢复（替代“删”）
+    public async Task<Result> DeactiveAsync(int id)
+    {
+        var item = await _db.ReferenceDataItems.FirstOrDefaultAsync(x => x.Id == id);
+        if(item is null)
+        {
+            return Result.Failure(Error.NotFound($"ReferenceDataItem",id));
+        }
+
+        item.Deactivate();
+        await _db.SaveChangesAsync();
+        return Result.Success();
+
+    }
+
+    public async Task<Result> ActivateAsync(int id)
+    {
+        var item = await _db.ReferenceDataItems.FirstOrDefaultAsync(x => x.Id == id);
+        if(item is null)
+        {
+            return Result.Failure(Error.NotFound($"ReferenceDataItem",id));
+        }
+
+        item.Activate();
+        await _db.SaveChangesAsync();
+        return Result.Success();
+    }
+
+
+
+    //改：更新字典项
+    public async Task<Result<ReferenceDataDto>> UpdateAsync(int id,  UpdateReferenceDataCommand request)
+    {
+        //1.先找有米有
+        var item = await _db.ReferenceDataItems.FindAsync(id);
+        if(item == null)
+        {
+            return Error.NotFound($"ReferenceData: {id} was not found",id);
+        }
+
+        //2.查name空否 type
+        if (string.IsNullOrEmpty(request.Name))
+            return Error.Validation("Name is required");
+            
+        if(!Enum.IsDefined(request.Type))
+            return Error.Validation("Reference Data Type is required ");
+        //3.查name重复
+
+        var nameExist =await _db.ReferenceDataItems.AnyAsync(x => x.Type == x.Type && x.Name.ToLower() == request.Name.Trim().ToLower());
+
+        //如果存在名字 就报错Error.Conflict（业务冲突错误 ➔ 对应 HTTP 409)
+        if (nameExist)return Error.Conflict($"Name: {request.Name} has already exist");
+
+        // 4.update
+        item.Name = request.Name;
+        item.Code = request.Code;
+        item.DisplayOrder = request.DisplayOrder;
+        item.IsActive = request.IsActive;
+        item.Type = request.Type;
+
+        await _db.SaveChangesAsync();
+        return item.ToDto();
+
+    }
+
+
+//查：获取单个
+    public async Task<Result<ReferenceDataDto>> GetByIdAsync(int id)
+    {
+        var item = await _db.ReferenceDataItems.FindAsync(id);
+        if(item == null)
+        {
+            return Error.NotFound("ReferenceDataItem", id);
+        }
+
+        return item.ToDto();
+    }
+
+    //查获取列表
+    public async Task<List<ReferenceDataDto>> ListByTypeAsync(ReferenceDataType type)
+    {
+        //从数据库查出来的 list，里面的元素类型是 ReferenceData
+        var list = await _db.ReferenceDataItems
+        .Where(x => x.Type == type && x.IsActive)
+        .OrderBy(x =>x.DisplayOrder)
+        //.ThenBy(x => x.Name) // 如果排序值一样，按名字字母顺序兜底
+        .ToListAsync();
+
+        //方法的返回值要求是 List<ReferenceDataDto>（数据传输对象列表）
+        //必须通过 .Select(x => x.ToDto())
+        return list.Select(x => x.ToDto()).ToList();
+    }
+
+
 
 /*
     //增：创建新字典项

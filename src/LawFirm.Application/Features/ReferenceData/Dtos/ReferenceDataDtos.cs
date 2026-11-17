@@ -27,6 +27,7 @@ public class CreateReferenceDataCommand
 // 3. 修改时前端传过来的数据
 public class UpdateReferenceDataCommand
 {
+    public ReferenceDataType Type { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Code { get; set; }
     public int DisplayOrder { get; set; }
