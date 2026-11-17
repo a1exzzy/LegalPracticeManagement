@@ -18,7 +18,7 @@ public sealed class LawFirmDbContext : DbContext
     public DbSet<ClientContact> ClientContacts => Set<ClientContact>();
     
     //加上reference
-    public DbSet<ReferenceData> ReferenceDatas => Set<ReferenceData>();
+    public DbSet<ReferenceDataItem> ReferenceDataItems => Set<ReferenceDataItem>();
 
     private static readonly DateTimeOffset SeedDate = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
@@ -126,9 +126,9 @@ public sealed class LawFirmDbContext : DbContext
         });
 
         // 2. 新增 ReferenceDataItem 的 Fluent API 配置与种子数据 
-        modelBuilder.Entity<ReferenceData>(entity =>
+        modelBuilder.Entity<ReferenceDataItem>(entity =>
         {
-            modelBuilder.Entity<ReferenceData>().HasKey(r => r.Id);
+            modelBuilder.Entity<ReferenceDataItem>().HasKey(r => r.Id);
         });
 
         base.OnModelCreating(modelBuilder);
