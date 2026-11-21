@@ -11,7 +11,7 @@ namespace LawFirm.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = AppRoles.SystemAdmin)] //如果整个 Controller 里的接口都只给SystemAdmin 
+    //[Authorize(Roles = AppRoles.SystemAdmin)] //如果整个 Controller 里的接口都只给SystemAdmin 
     public class ReferenceDataController : ControllerBase
     {
         // 1. 通过构造函数注入 Service

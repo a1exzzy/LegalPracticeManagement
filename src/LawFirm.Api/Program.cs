@@ -3,10 +3,12 @@ using LawFirm.Application.Features.Clients;
 using LawFirm.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using LawFirm.Application.Features.ReferenceData;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IReferenceDataService, ReferenceDataService>();
 
 var dbProvider = builder.Configuration["Database:Provider"] ?? "SqlServer";
 builder.Services.AddDbContext<LawFirmDbContext>(options =>
