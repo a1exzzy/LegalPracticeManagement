@@ -6,9 +6,10 @@ namespace LawFirm.Domain.Entities;
 public class Intake
 {
     public int Id { get; private set; }
+    public string IntakeNumber { get; set; }  = string.Empty;
     public string ProspectiveClientName { get; set; } = string.Empty; //required
     public int PracticeAreaId { get; set; }//required
-    public IntakeStatus Status;//required
+    public IntakeStatus Status = IntakeStatus.New;//required, default New
 
     public ClientType ClientTypeGuess { get; set; } //optional
     public string? PrimaryEmail { get; set; }
@@ -18,5 +19,7 @@ public class Intake
     public string? SourceOfEnquiry { get; set; } //phone / email / referral / walk-in / website etc.
     public string? OpposingParty { get; set; } //optional
     public DateTime ConsultationDate { get; set; }
+    public string? Summary { get; set; } = string.Empty;
+    public string? Notes { get; set; } = string.Empty;
 
 }

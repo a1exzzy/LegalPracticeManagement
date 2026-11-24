@@ -19,6 +19,8 @@ public sealed class LawFirmDbContext : DbContext
     
     //加上reference
     public DbSet<ReferenceDataItem> ReferenceDataItems => Set<ReferenceDataItem>();
+    //加上Intake
+    public DbSet<Intake> Intakes => Set<Intake>();
 
     private static readonly DateTimeOffset SeedDate = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
 
@@ -132,6 +134,13 @@ public sealed class LawFirmDbContext : DbContext
         });
 
         base.OnModelCreating(modelBuilder);
+
+        //3. Intake and fluent API
+        modelBuilder.Entity<Intake>(entity=>
+        {
+            modelBuilder.Entity<Intake>().HasKey(i => i.Id);
+            
+        });
     }
 
 }
